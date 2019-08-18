@@ -32,8 +32,11 @@ module.exports = {
         uri: filePath
       });
 
-      const darkness = await sql.createTable(keys, timeStampedFileName)
-
+      if (upload) {
+        await sql.createTable(keys, timeStampedFileName)
+        const records = await sql.insertData(data, keys, timeStampedFileName);
+      }
+      
     } else {
       console.log("Invalid Command, Try Again.")
     }
