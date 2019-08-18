@@ -20,33 +20,23 @@ module.exports = {
       
       const timeStampedFileName = `${baseName.split('.')[0]}_${Date.now()}`
 
+      let filePath = uri;
+
       if (!path.isAbsolute(dirName)) {
-
-          const cwd = process.cwd()
-          const joined = path.join(cwd, dirName, baseName)
-
-        csv.parse({
-          mode,
-          uri: joined,
-        }).then(async ({ keys, data }) => {
-          if (upload) {
-            const darkness = await sql.createTable(keys, timeStampedFileName)
-            console.log(darkness)
-          }
-        }).catch(err => errors.handle(err));
-
-      } else {
-        const data = csv.parse({
-          mode,
-          uri,
-        }).then( async ({ keys, data }) => {
-          if (upload) {
-            const darkness = await sql.createTable(keys, timeStampedFileName)
-            console.log(darkness)
-          }
-        }).catch(err => errors.handle(err));
-        console.log(data)
+        const cwd = process.cwd()
+        filePath = path.join(cwd, dirName, baseName)
       }
+
+      csv.parse({
+        mode,
+        uri: filePath,
+      }).then(async ({ keys, data }) => {
+        if (upload) {
+          const darkness = await sql.createTable(keys, timeStampedFileName)
+          console.log(darkness)
+        }
+      }).catch(err => errors.handle(err));
+
     } else {
       console.log("Invalid Command, Try Again.")
     }
