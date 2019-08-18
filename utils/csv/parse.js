@@ -10,12 +10,11 @@ const processRawCSVArray = require('./jsonify.js');
  * @param {{
  *  URI: String
  *  mode: String
- *  fileName: String
  * }} config
  * 
  * uri: A string path to a local or remote CSV file.
  * mode: A string describing the source of the URI filepath
- * fileName: The resolved file path base 
+ * 
  * 
  *  Acceptable Values: "absolute", "relative", "remote" 
  *    local: Full/Relative file path
@@ -26,7 +25,7 @@ const processRawCSVArray = require('./jsonify.js');
 const parseFileFromPath = (config) => {
   return new Promise((resolve, reject) => {
     try {
-      const { uri, mode, fileName } = config;
+      const { uri, mode } = config;
       switch(true){
         case(mode === "local"):
           const output = [];
@@ -44,9 +43,9 @@ const parseFileFromPath = (config) => {
           })
 
           parseStream.on('end', () => {
-            const formattedCSVObject = processRawCSVArray(output);
+            const { keys, data } = processRawCSVArray(output);
             parseStream.end();
-            resolve(formattedCSVObject);
+            resolve({ keys, data });
           })
 
           const readableFileStream = fs.createReadStream(`${uri}`)

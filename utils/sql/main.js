@@ -2,19 +2,18 @@ const pgp = require('./pg/init');
 
 const errors = require('../errors/handle-error.js');
 
-createSQLTableFromKeys = (keys, filename) => {
+createSQLTableFromKeys = async (keys, tableName) => {
   try {
-    const timestamp = Date.now();
-    const tableName = `${filename.split('.')[0]}_${timestamp}`;
+    // Splitting the fileName gets rid of the .csv at the end,
+    // We can do this alternatively in the main.js path resolution stage...
 
     const sqlStringArray = keys.map(key => {
-      return `${key.toUpperCase()} TEXT`
+      return `${key} text`
     }).join(",\n");
 
     const fullString = `CREATE TABLE ${tableName} (${sqlStringArray})`
-
-    pgp.none(fullString);
-
+    const success = await pgp.none(fullString);
+    console.log(success);
   } catch(err) {
     errors.handle(err);
   }

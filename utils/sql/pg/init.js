@@ -5,7 +5,7 @@ const connection = {
   port: process.env.POSTGRES_PORT,
   database: process.env.POSTGRES_DATABASE,
   user: process.env.POSTGRES_USER,
-  pasword: process.env.POSTGRES_PW,
+  password: process.env.POSTGRES_PW,
 }
 
-module.exports.pgp = pgp(connection);
+module.exports = pgp(connection);

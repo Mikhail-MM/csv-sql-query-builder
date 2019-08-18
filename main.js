@@ -1,31 +1,24 @@
 const path = require('path');
 const process = require('process');
-const errors = require('./utils/errors/handle-error');
+
 require('dotenv').config({path: './.env'})
+
 const csv = require('./utils/csv/csv.js');
-const { 
-  parse
-} = csv
-
-/*
-
-csv.parse({
-  mode: 'local',
-  URI: `C:/Users/mikem/Desktop/h1-challenge/client/public/LoanStats3a.csv`
-});
-
-*/
+const sql = require('./utils/sql/main');
+const errors = require('./utils/errors/handle-error');
 
 module.exports = {
   cli: () => {
 
     const args = require('yargs').argv;
-    const { mode, uri } = args;
+    const { mode, uri, upload } = args;
 
     if (mode === "local") {
 
       const baseName = path.basename(uri)
       const dirName = path.dirname(uri)
+      
+      const timeStampedFileName = `${baseName.split('.')[0]}_${Date.now()}`
 
       if (!path.isAbsolute(dirName)) {
 
@@ -35,18 +28,22 @@ module.exports = {
         csv.parse({
           mode,
           uri: joined,
-          fileName: baseName
-        }).then(data => {
-          //console.log(data)
+        }).then(async ({ keys, data }) => {
+          if (upload) {
+            const darkness = await sql.createTable(keys, timeStampedFileName)
+            console.log(darkness)
+          }
         }).catch(err => errors.handle(err));
 
       } else {
         const data = csv.parse({
           mode,
           uri,
-          fileName: baseName
-        }).then(data => {
-          //console.log(data);
+        }).then( async ({ keys, data }) => {
+          if (upload) {
+            const darkness = await sql.createTable(keys, timeStampedFileName)
+            console.log(darkness)
+          }
         }).catch(err => errors.handle(err));
         console.log(data)
       }

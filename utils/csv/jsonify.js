@@ -19,9 +19,9 @@ const attachKeysToData = (data, keys) => {
 
 module.exports = processRawCSVArray = (csvData) => {
   const keys = sanitizeKeys(getDataKeys(csvData));
-  const data = getDataValues(csvData);
-  const dataObject = data.map(values => {
+  const dataValues = getDataValues(csvData);
+  const data = dataValues.map(values => {
     return attachKeysToData(values, keys)
   })
-  return { keys, dataObject }
+  return { keys, data }
 }
