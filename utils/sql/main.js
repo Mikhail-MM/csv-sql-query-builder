@@ -34,12 +34,15 @@ const insertCSVDataIntoDB = async (data, keys, tableName) => {
 
     let progress = 1;
     for (let textValues of dataTextValues) {
-      const query = `${insertPrefixText}(${textValues}) RETURNING *`
-      console.log(query)
-      console.log(`Uploading ${progress}/${dataTextValues.length}`);
-      const returned = await pgp.one(query);
-      console.log("Success!")
-      progress++
+      try {
+        console.log(`Uploading ${progress}/${dataTextValues.length}`);
+        const query = `${insertPrefixText}(${textValues}) RETURNING *`
+        await pgp.one(query);
+        console.log("Success!")
+        progress++
+      } catch(err) {
+        errors.handle(err)
+      }
     }
 
     console.log("Uploaded all CSV data.");

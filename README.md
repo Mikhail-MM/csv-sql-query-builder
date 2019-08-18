@@ -1,4 +1,4 @@
-## Description
+# Description
 This is a wrapper around the `csv-parse` and `pg-primise` libraries, which can be used from the command line, or imported into an existing node project. 
 
 This is meant to be an interface to read a CSV file, format and sanitize the keys, and upload the data as text to a PostgreSQL server.
@@ -7,7 +7,7 @@ This is meant to be an interface to read a CSV file, format and sanitize the key
 ## Usage:
 * If you want to upload your CSV data to PostgreSQL, make sure to create an .env file containing your DB connection information.
 
-# .env config
+### .env config
 
 ```
 POSTGRES_HOST=my-db.hash.us-east-2.rds.amazonaws.com
@@ -25,7 +25,7 @@ POSTGRES_PW=my-pass-word
 
 `$ get-csv --mode local --upload --uri ./file.csv`
 
-### OPTIONS:
+# OPTIONS:
 
 ```
 --mode              Specify whether the CSV is a local file 
