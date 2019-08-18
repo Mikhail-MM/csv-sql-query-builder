@@ -8,7 +8,7 @@ const sql = require('./utils/sql/main');
 const errors = require('./utils/errors/handle-error');
 
 module.exports = {
-  cli: () => {
+  cli: async () => {
 
     const args = require('yargs').argv;
     const { mode, uri, upload } = args;
@@ -27,15 +27,12 @@ module.exports = {
         filePath = path.join(cwd, dirName, baseName)
       }
 
-      csv.parse({
+      const { keys, data } = await csv.parse({
         mode,
-        uri: filePath,
-      }).then(async ({ keys, data }) => {
-        if (upload) {
-          const darkness = await sql.createTable(keys, timeStampedFileName)
-          console.log(darkness)
-        }
-      }).catch(err => errors.handle(err));
+        uri: filePath
+      });
+
+      const darkness = await sql.createTable(keys, timeStampedFileName)
 
     } else {
       console.log("Invalid Command, Try Again.")
