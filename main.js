@@ -1,7 +1,10 @@
 const path = require('path');
 const process = require('process');
 
-require('dotenv').config({path: './.env'})
+const mainScriptPath = path.dirname(__filename);
+const envPath = path.join(mainScriptPath, './.env');
+
+require('dotenv').config({ path: envPath })
 
 const csv = require('./utils/csv/csv.js');
 const sql = require('./utils/sql/main');

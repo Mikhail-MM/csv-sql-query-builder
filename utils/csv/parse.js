@@ -4,7 +4,6 @@ const csv = require("csv-parse")
 const errors = require('../errors/handle-error.js')
 
 const processRawCSVArray = require('./jsonify.js');
-
 /**
  * 
  * @param {{

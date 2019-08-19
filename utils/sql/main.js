@@ -2,8 +2,19 @@ const pgp = require('./pg/init');
 
 const errors = require('../errors/handle-error.js');
 
+const sanitizeReservedWords = (keys) => {
+  return keys.map(key => {
+    if (key === "desc") {
+      return "description";
+    } else {
+      return key
+    }
+  })
+}
+
 const createSQLTableFromKeys = async (keys, tableName) => {
   try {
+
     // Splitting the fileName gets rid of the .csv at the end,
     // We can do this alternatively in the main.js path resolution stage...
 
@@ -14,6 +25,7 @@ const createSQLTableFromKeys = async (keys, tableName) => {
     // watch for SQL injection here ...
 
     const fullString = `CREATE TABLE ${tableName} (${sqlStringArray})`
+    console.log(`CREATE TABLE ${tableName} (${sqlStringArray})`)
     await pgp.none(fullString);
     return true
   } catch(err) { errors.handle(err); }
@@ -21,7 +33,6 @@ const createSQLTableFromKeys = async (keys, tableName) => {
 
 const insertCSVDataIntoDB = async (data, keys, tableName) => {
   try {
-
     const insertPrefixText = `INSERT INTO ${tableName}(${keys.join(', ')}) VALUES`
     
     const dataTextValues = data.map(datum => {
@@ -32,26 +43,24 @@ const insertCSVDataIntoDB = async (data, keys, tableName) => {
       }).join(', ')
     })
 
-    let progress = 1;
-    for (let textValues of dataTextValues) {
-      try {
-        console.log(`Uploading ${progress}/${dataTextValues.length}`);
-        const query = `${insertPrefixText}(${textValues}) RETURNING *`
-        await pgp.one(query);
-        console.log("Success!")
-        progress++
-      } catch(err) {
-        errors.handle(err)
+    
+    pgp.task(async t => {
+      for (let textValues of dataTextValues) {
+        try {
+          const query = `${insertPrefixText}(${textValues}) RETURNING *`
+          await t.one(query);
+        } catch(err) {
+          errors.handle(err)
+        }
       }
-    }
-
-    console.log("Uploaded all CSV data.");
-
+      return;
+    })
   } catch(err) { errors.handle(err); }
 }
 
 
 module.exports = {
   createTable: createSQLTableFromKeys,
-  insertData: insertCSVDataIntoDB
+  insertData: insertCSVDataIntoDB,
+  sanitizeReservedWords,
 }
